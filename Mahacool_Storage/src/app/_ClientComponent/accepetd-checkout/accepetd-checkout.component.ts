@@ -23,6 +23,7 @@ export class AccepetdCheckoutComponent {
   fetchDeactivatedRecords(customerId: string): void {
     this.warehouseService.getDeactivatedRecord(customerId).subscribe(
       (data) => {
+        console.log(data);
         this.deactivatedRecords = [data]; // If it's a single object, convert it to an array
       },
       (error) => {

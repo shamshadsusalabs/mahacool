@@ -71,8 +71,8 @@ export class MonthlyInvoiceComponent {
 
   // Calculate remaining amount (unpaid - paid) for each month
   calculateRemainingAmount(month: string): number {
-    const unpaid = this.customerInvoice?.unpaidMonthly[month] || 0;
-    const paid = this.customerInvoice?.paidMonthlyTotals[month] || 0;
+    const unpaid = this.customerInvoice?.unpaidMonthly?.[month] || 0;
+    const paid = this.customerInvoice?.paidMonthlyTotals?.[month] || 0;
     return unpaid - paid;
   }
 

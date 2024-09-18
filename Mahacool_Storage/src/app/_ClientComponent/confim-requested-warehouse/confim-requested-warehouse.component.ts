@@ -23,6 +23,7 @@ interface WarehouseRequest {
 })
 export class ConfimRequestedWarehouseComponent implements OnInit {
   warehouseRequests: WarehouseRequest[] = [];
+  loading: boolean = true;
 
   constructor(private warehouseService: WarehouseService) {}
 
@@ -35,17 +36,20 @@ export class ConfimRequestedWarehouseComponent implements OnInit {
     if (userId) {
       this.warehouseService.getDetailsByCustomerID(userId).subscribe(
         response => {
-          if (Array.isArray(response)) {
-            this.warehouseRequests = response;
+          this.loading = false; // Set loading to false on response
+          if (response && Array.isArray(response.details)) {
+            this.warehouseRequests = response.details; // Assign the details array
           } else {
             console.error('Unexpected response format:', response);
           }
         },
         error => {
+          this.loading = false; // Also set loading to false on error
           console.error('Error updating status:', error);
         }
       );
     } else {
+      this.loading = false;
       console.error('No user ID found in localStorage.');
     }
   }

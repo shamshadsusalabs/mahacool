@@ -50,7 +50,7 @@ const connectToDatabase = async () => {
         process.exit(1);
     }
 };
-connectToDatabase();
+connectToDatabase();  
 
 // Middleware setup
 app.use(cors({

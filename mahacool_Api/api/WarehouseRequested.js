@@ -64,23 +64,36 @@ router.get('/details/:customerID', async (req, res) => {
   try {
       const { customerID } = req.params;
 
-      // Find the document where `user.customerID` matches and `requestedWarehouseStatus` is false
-      const result = await WarehouseRequested.findOne({
+      // Validate customerID format if necessary
+      if (!customerID) {
+          return res.status(400).json({ message: 'Invalid customer ID' });
+      }
+
+      // Find all documents where `user.customerID` matches and `requestedWarehouseStatus` is false
+      const results = await WarehouseRequested.find({
           'selectedData.user.customerID': customerID,
           requestedWarehouseStatus: false
       });
 
-      if (!result) {
+      if (results.length === 0) {
           return res.status(404).json({ message: 'No data found' });
       }
 
-      // Return the `details` array
-      res.json(result.selectedData.details);
+      // Extract details from each result
+      const detailsArray = results.map(result => result.selectedData.details).flat();
+
+      // Return the combined details
+      res.json({
+          customerID,
+          details: detailsArray,
+          message: 'Data retrieved successfully'
+      });
   } catch (err) {
       console.error(err);
       res.status(500).json({ message: 'Server error' });
   }
 });
+
 
 
 
