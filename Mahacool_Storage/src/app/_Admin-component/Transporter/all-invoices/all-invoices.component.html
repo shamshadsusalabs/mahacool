@@ -1,0 +1,130 @@
+<div class="container mx-auto p-4">
+  <!-- Search Bar -->
+  <div class="mb-4 flex justify-between items-center">
+    <h1 class="text-xl font-bold">Invoice List</h1>
+    <input
+      type="text"
+      placeholder="Search by Customer ID"
+      class="px-4 py-2 border border-gray-300 rounded shadow focus:outline-none focus:ring-2 focus:ring-blue-500"
+      [(ngModel)]="searchCustomerId" (input)="searchInvoices()"
+    />
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full table-auto bg-white rounded-lg shadow-lg">
+      <thead>
+        <tr class="bg-gray-100 text-left">
+          <th class="px-4 py-2 border">Customer ID</th>
+          <th class="px-4 py-2 border">Dry Fruits</th>
+          <th class="px-4 py-2 border">Check-in Dates</th>
+          <th class="px-4 py-2 border">Check-out Dates</th>
+          <th class="px-4 py-2 border">Weight (kg)</th>
+          <th class="px-4 py-2 border">Stored Days</th>
+          <th class="px-4 py-2 border">Total Payable (₹)</th>
+
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Loop through all customer invoices -->
+        <ng-container *ngFor="let customer of paginatedInvoices; let i = index">
+          <tr>
+            <!-- Customer ID -->
+            <td class="px-4 py-2 border">{{ customer.customerId }}</td>
+
+            <!-- Dry Fruits List -->
+            <td class="px-4 py-2 border">
+              <ul>
+                <li *ngFor="let invoice of customer.invoices">
+                  {{ invoice.dryFruitName }}
+                </li>
+              </ul>
+            </td>
+
+            <!-- Check-in Dates -->
+            <td class="px-4 py-2 border">
+              <ul>
+                <li *ngFor="let invoice of customer.invoices">
+                  {{ invoice.dateCheckIN | date }}
+                </li>
+              </ul>
+            </td>
+
+            <!-- Check-out Dates -->
+            <td class="px-4 py-2 border">
+              <ul>
+                <li *ngFor="let invoice of customer.invoices">
+                  {{ invoice.dateCheckout | date }}
+                </li>
+              </ul>
+            </td>
+
+            <!-- Individual Weights -->
+            <td class="px-4 py-2 border">
+              <ul>
+                <li *ngFor="let invoice of customer.invoices">
+                  {{ invoice.weight }} kg
+                </li>
+              </ul>
+            </td>
+
+            <!-- Stored Hours -->
+            <td class="px-4 py-2 border">
+              <ul>
+                <li *ngFor="let invoice of customer.invoices">
+                  {{ invoice.storedDays}}
+                </li>
+              </ul>
+            </td>
+
+            <!-- Total Payable Amount for All Invoices -->
+            <td class="px-4 py-2 border font-bold">
+              {{ getTotalPayableAmount(customer.invoices) | currency:'INR' }}
+            </td>
+
+            <!-- Action Button -->
+
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination Controls -->
+  <div class="mt-4 flex justify-between items-center">
+    <div class="text-sm">
+      Page {{ currentPage }} of {{ totalPages }}
+    </div>
+    <div class="space-x-2">
+      <button class="px-3 py-1 border rounded" (click)="prevPage()" [disabled]="currentPage === 1">
+        Previous
+      </button>
+      <button class="px-3 py-1 border rounded" (click)="nextPage()" [disabled]="currentPage === totalPages">
+        Next
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Printable Section for Invoice -->
+<div id="printableInvoice" class="hidden">
+  <div class="container mx-auto p-4">
+    <h1 class="text-xl font-bold mb-4">Invoice Details</h1>
+
+    <!-- Customer Information -->
+    <div class="mb-4">
+      <p><strong>Customer ID:</strong> {{ selectedCustomer.customerId }}</p>
+      <p><strong>Total Payable:</strong> {{ getTotalPayableAmount(selectedCustomer.invoices) | currency:'INR' }}</p>
+    </div>
+
+  <!-- Printable Section for Invoice -->
+<div id="printableInvoice" class="hidden">
+  <div class="container mx-auto p-4">
+    <h1 class="text-xl font-bold mb-4">Invoice Details</h1>
+
+    <!-- Customer Information -->
+    <div class="mb-4">
+      <p><strong>Customer ID:</strong> {{ selectedCustomer.customerId }}</p>
+      <p><strong>Total Payable:</strong> {{ getTotalPayableAmount(selectedCustomer.invoices) | currency:'INR' }}</p>
+    </div>
+

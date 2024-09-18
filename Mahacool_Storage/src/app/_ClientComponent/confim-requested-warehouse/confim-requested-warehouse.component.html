@@ -1,0 +1,12 @@
+<div class="p-6 space-y-6">
+  <div *ngFor="let request of warehouseRequests" class="bg-white shadow-2xl rounded-lg p-6 border border-gray-200">
+    <p class="text-lg text-gray-800">
+      Your request for city <span class="font-bold text-blue-600">{{ request.cityName }}</span> and warehouse <span class="font-bold text-blue-600">{{ request.warehouseName }}</span> has been accepted at a price of <span class="font-bold text-green-600">₹{{ request.rate }}</span>.
+    </p>
+  </div>
+  <ng-template #noData>
+    <div class="text-center text-gray-500">
+      <p class="text-lg font-semibold">No warehouse requests available.</p>
+    </div>
+  </ng-template>
+</div>
