@@ -1,4 +1,4 @@
-<div class="flex h-screen">
+<div class="flex h-screen" style="font-family: 'Creepster', cursive;">
   <!-- Sidebar -->
   <aside
     [ngClass]="{'-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen}"
@@ -20,9 +20,6 @@
       <a routerLink="manager" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
         <span class="material-icons mr-3">person</span> Manager
       </a>
-      <!-- <a routerLink="driver" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span class="material-icons mr-3">local_shipping</span> Driver
-      </a> -->
       <a routerLink="security" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
         <span class="material-icons mr-3">security</span> Security
       </a>
@@ -32,12 +29,6 @@
       <a routerLink="warehouse" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
         <span class="material-icons mr-3">inventory_2</span> Warehouse
       </a>
-      <!-- <a routerLink="bag" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <svg class="mr-3 w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3a1 1 0 00-1-1H4a1 1 0 00-1 1v4M8 7h8m0 0v12a2 2 0 01-2 2H4a2 2 0 01-2-2V7m10 0h4a2 2 0 012 2v12a2 2 0 01-2 2H12a2 2 0 01-2-2V9a2 2 0 012-2z"></path>
-        </svg>
-        Sack
-      </a> -->
 
       <!-- History Section -->
       <div class="space-y-1">
@@ -55,10 +46,8 @@
         </div>
       </div>
 
-
       <a routerLink="request-warehouse" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span
-         class="material-icons mr-3">visibility</span> Warehouse Request
+        <span class="material-icons mr-3">visibility</span> Warehouse Request
       </a>
 
       <a routerLink="warehouseCheckout-requested" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
@@ -66,7 +55,6 @@
       </a>
       <div class="space-y-1">
         <a (click)="toggleInvoive()" class="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-gray-100 cursor-pointer">
-
           <span class="material-icons mr-3">receipt</span> Invoices
           <span class="material-icons ml-auto" *ngIf="!isInvoices">expand_more</span>
           <span class="material-icons ml-auto" *ngIf="isInvoices">expand_less</span>
@@ -76,19 +64,11 @@
           <a routerLink="Allinvoices" class="block text-gray-600 px-4 py-2 rounded-md hover:bg-gray-100">All Invoices</a>
         </div>
       </div>
-      <!-- <a href="#" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span class="material-icons mr-3">local_shipping</span> Suppliers
-      </a> -->
 
-      <!-- <a href="#" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span class="material-icons mr-3">store</span> Manage Store
-      </a> -->
-      <!-- <a href="#" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span class="material-icons mr-3">support_agent</span> Support
-      </a> -->
-      <!-- <a href="#" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
-        <span class="material-icons mr-3">analytics</span> Analytics
-      </a> -->
+      <a routerLink="monthly_invoice"  class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
+        <span class="material-icons mr-3">attach_money</span> Updated Client Bill
+      </a>
+
     </nav>
 
     <!-- Settings Link -->
@@ -103,7 +83,7 @@
   <!-- Main Content -->
   <div class="flex-1 flex flex-col">
     <!-- Top Navbar -->
-    <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4 sticky top-0">
+    <header class="flex items-center justify-between h-16 bg-white border-b border-gray-200 px-4 sticky top-0" style="font-family: 'Creepster', cursive;">
       <div class="relative flex-1">
         <!-- <input
           type="text"

@@ -101,7 +101,7 @@ export class StoryComponent {
       "id"   : m
     };
 
-    this.http.post('http://localhost:3000/api/rack/updatestoryname', bu).subscribe(
+    this.http.post('http://localhost:3000 /api/rack/updatestoryname', bu).subscribe(
       result => {
         console.log(result);
         alert("Data Saved");

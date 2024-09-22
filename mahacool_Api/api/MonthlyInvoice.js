@@ -32,70 +32,48 @@ router.get('/getByCustomerId/:customerId', async (req, res) => {
 });
 
 
-
-router.get('/getByCustomerId/:customerId', async (req, res) => {
-    const { customerId } = req.params;
-    
-    try {
-        const invoice = await MonthlyInvoice.findOne({ customerId });
-        if (!invoice) {
-            return res.status(404).json({ message:` Invoice not found for Customer ID: ${customerId}` });
-        }
-        res.status(200).json(invoice);
-    } catch (error) {
-        console.error(`Error fetching invoice for Customer ID: ${customerId}, error`);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-});
 router.post('/updatePaidTotals/:customerId', async (req, res) => {
     const { customerId } = req.params;
-    const { paidGrandTotalAmounts } = req.body;
+    const { paidGrandTotalAmounts } = req.body; // paid amount directly from the request
+
+    // Validate input
+    if (!paidGrandTotalAmounts || paidGrandTotalAmounts <= 0) {
+        return res.status(400).json({ message: 'Invalid paidGrandTotalAmounts. It must be greater than zero.' });
+    }
 
     try {
+        // Find the invoice by customer ID
         const invoice = await MonthlyInvoice.findOne({ customerId });
         if (!invoice) {
             return res.status(404).json({ message: `Invoice not found for Customer ID: ${customerId}` });
         }
 
-        // Update the paidGrandTotalAmounts array
-        if (paidGrandTotalAmounts) {
-            // Append new amounts to the existing array
-            invoice.paidGrandTotalAmounts = [...(invoice.paidGrandTotalAmounts || []), ...paidGrandTotalAmounts];
-        }
+        // Push the new payment to the paidGrandTotalAmounts array
+        invoice.paidGrandTotalAmounts.push({ 
+            amount: paidGrandTotalAmounts, 
+            date: new Date() 
+        });
 
-        // Ensure paidMonthlyTotals is initialized as a Map
-        if (!invoice.paidMonthlyTotals) {
-            invoice.paidMonthlyTotals = new Map();
-        }
+        // Process payments
+        await invoice.processPayments(); 
 
-        // Calculate the total paid amount
-        const totalPaid = (invoice.paidGrandTotalAmounts || []).reduce((sum, amount) => sum + amount, 0);
-        const totalUnpaid = [...(invoice.unpaidMonthly || [])].reduce((sum, [, amount]) => sum + amount, 0);
-
-        // If total paid covers all unpaid amounts, transfer to paidMonthlyTotals
-        if (totalPaid >= totalUnpaid && invoice.unpaidMonthly) {
-            invoice.unpaidMonthly.forEach((amount, month) => {
-                if (invoice.paidMonthlyTotals.has(month)) {
-                    // Add unpaid amount to the existing paid amount for the month
-                    invoice.paidMonthlyTotals.set(month, invoice.paidMonthlyTotals.get(month) + amount);
-                } else {
-                    // Add new month and amount to paidMonthlyTotals
-                    invoice.paidMonthlyTotals.set(month, amount);
-                }
-            });
-
-            // Clear unpaidMonthly since all amounts are paid
-            invoice.unpaidMonthly = new Map();
-        }
-
+        // Save the updated invoice
         await invoice.save();
 
-        res.status(200).json({ message: 'Paid totals updated and unpaid amounts transferred successfully', invoice });
+        res.status(200).json({ message: 'Paid totals updated successfully', paidGrandTotalAmounts });
     } catch (error) {
-        console.error(`Error updating paid totals for Customer ID: ${customerId}, error: ${error}`);
+        console.error(`Error updating paid totals for Customer ID: ${customerId}`, error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+
+
+
+
+    
+
+
 
 module.exports = router;
 

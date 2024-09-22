@@ -80,7 +80,7 @@ export class UplodgunnyboxComponent {
   }
 
   private uploadData(dataArray: any[]): void {
-    this.http.post('http://localhost:3000/api/box/add', dataArray)
+    this.http.post('http://localhost:3000 /api/box/add', dataArray)
       .subscribe({
         next: () => {
           this.setLoadingState(false);

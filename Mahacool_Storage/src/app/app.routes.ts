@@ -116,7 +116,13 @@ export const routes: Routes = [
 
         path: 'warehouseCheckout-requested',
         loadComponent: () => import('./_Admin-component/Transporter/warehouserequestcheckout/warehouserequestcheckout.component').then(c => c.WarehouserequestcheckoutComponent),
+      },
+      {
+
+        path: 'monthly_invoice',
+        loadComponent: () => import('./_Admin-component/Transporter/monthly-clinet-inviice-form/monthly-clinet-inviice-form.component').then(c => c.MonthlyClinetInviiceFormComponent),
       }
+
 
     ]
   },

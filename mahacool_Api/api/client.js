@@ -489,25 +489,33 @@ router.get('/latest-location', async (req, res) => {
 router.post('/upload/:clientId', upload.single('file'), async (req, res) => {
     try {
         const clientId = req.params.clientId; // Get clientId from request params
+        console.log('Received clientId:', clientId); // Log clientId
+
         const file = req.file; // Get the uploaded file
+        console.log('Uploaded file:', file); // Log uploaded file details
 
         if (!file) {
+            console.log('No file uploaded');
             return res.status(400).send('No file uploaded');
         }
 
         // Upload the file to Firebase and get the download URL
         const fileUrl = await uploadFile(file); // Ensure you have the `uploadFile` function implemented
+        console.log('File uploaded to Firebase, URL:', fileUrl); // Log the uploaded file URL
 
         // Find the client by customerId
         const client = await ClientSchemas.findOne({ customerID: clientId });
+        console.log('Found client:', client); // Log client details
 
         if (!client) {
+            console.log('Client not found');
             return res.status(404).json({ msg: 'Client not found' });
         }
 
         // Initialize fileUrls array if it doesn't exist
         if (!client.fileUrls) {
             client.fileUrls = [];
+            console.log('Initialized fileUrls array');
         }
 
         // Add the file URL with the current date to the client's fileUrls array
@@ -515,16 +523,21 @@ router.post('/upload/:clientId', upload.single('file'), async (req, res) => {
             url: fileUrl,
             date: new Date().toISOString() // ISO format date
         });
+        console.log('Updated fileUrls:', client.fileUrls); // Log updated fileUrls array
 
         // Save the updated client data
         await client.save();
+        console.log('Client data saved successfully'); // Log success message
 
         res.status(200).json({ msg: 'File uploaded successfully', fileUrl, client });
     } catch (error) {
-        console.error(error.message); // Use console.error for error logging
+        console.error('Error occurred:', error.message); // Log the error message
         res.status(500).json({ msg: 'Server error' });
     }
 });
+
+
+
 router.get('/files/:customerId', async (req, res) => {
     try {
         const customerId = req.params.customerId; // Get customerId from request params
@@ -547,7 +560,25 @@ router.get('/files/:customerId', async (req, res) => {
 
 
 
+router.get('/invoice-details/:customerID', async (req, res) => {
+    try {
+        const customerID = req.params.customerID;
+        
+        // Find client by customerID
+        const client = await ClientSchemas.findOne({ customerID: customerID }, 'name mobile gstNumber address email');
 
+        // If no client is found, return a 404 response
+        if (!client) {
+            return res.status(404).json({ message: 'Client not found' });
+        }
+
+        // Return the client details
+        res.json(client);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+});
 
 
 module.exports = router;

@@ -20,4 +20,12 @@ export class InvoiceService {
   getInvoiceByCustomerId(customerId: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/getByCustomerId/${customerId}`);
   }
+
+  updatePaidTotals(customerId: string, paidGrandTotalAmounts: number): Observable<any> {
+    const body = { paidGrandTotalAmounts };
+
+
+    return this.http.post(`${this.baseUrl}/updatePaidTotals/${customerId}`, body,);
+
+}
 }

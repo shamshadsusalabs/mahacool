@@ -3,7 +3,7 @@ const path = require('path');
 const { v4: uuidv4 } = require('uuid'); // For generating unique file names
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require('./mahacool-872ff-firebase-adminsdk-ky9vd-848f5874ce.json');
+const serviceAccount = require('./mahacool-872ff-firebase-adminsdk-ky9vd-129cb7afec.json');
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),

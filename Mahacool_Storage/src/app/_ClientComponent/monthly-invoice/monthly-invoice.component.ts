@@ -22,6 +22,8 @@ interface CustomerInvoice {
   paidGrandTotalAmounts: number[];
   paidMonthlyTotals: { [key: string]: number };
   unpaidMonthly: { [key: string]: number };
+  unpaidRemainingAmount:number
+totalPaidAmount:number
   __v: number;
 }
 
@@ -66,23 +68,22 @@ export class MonthlyInvoiceComponent {
 
   // Get months from unpaidMonthly to display in the cards
   getMonths(monthlyTotals: { [key: string]: number } | undefined): string[] {
-    return monthlyTotals ? Object.keys(monthlyTotals) : [];
+    if (!monthlyTotals) return [];
+
+    return Object.keys(monthlyTotals).sort((a, b) => {
+      const monthA = new Date(a + " 1"); // Add a dummy day for proper parsing
+      const monthB = new Date(b + " 1");
+      return monthA.getTime() - monthB.getTime(); // Sort by date
+    });
   }
+
 
   // Calculate remaining amount (unpaid - paid) for each month
   calculateRemainingAmount(month: string): number {
     const unpaid = this.customerInvoice?.unpaidMonthly?.[month] || 0;
     const paid = this.customerInvoice?.paidMonthlyTotals?.[month] || 0;
-    return unpaid - paid;
+    return Math.round(unpaid - paid); // Round the remaining amount
   }
 
-  // Calculate grand total payable by subtracting all amounts from paidGrandTotalAmounts
-  calculateGrandTotalPayable(): number {
-    const totalPaid = this.customerInvoice?.paidGrandTotalAmounts.reduce(
-      (sum, amount) => sum + amount,
-      0
-    ) || 0;
-    const grandTotalAmount = this.customerInvoice?.grandTotalAmount || 0;
-    return grandTotalAmount - totalPaid;
-  }
+
 }

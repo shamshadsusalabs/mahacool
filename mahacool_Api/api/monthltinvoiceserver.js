@@ -215,7 +215,7 @@ async function saveNewInvoices(customerHistory) {
 }
 
 // Schedule the cron job to run at midnight every day
-cron.schedule('*/10 * * * * *', () => {
+cron.schedule(' * * * * *', () => {
     console.log('Running scheduled task to process customer histories at midnight');
     processAllCustomerHistories();
 });

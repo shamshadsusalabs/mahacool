@@ -1,11 +1,11 @@
-<div class="flex h-screen">
+<div class="flex h-screen" style="font-family: 'Creepster', cursive;"> <!-- Apply the font here -->
   <!-- Sidebar -->
   <aside
     [ngClass]="{'-translate-x-full': !isSidebarOpen, 'translate-x-0': isSidebarOpen}"
     class="w-64 bg-white border-r border-gray-200 flex flex-col transition-transform transform md:translate-x-0 md:static fixed h-full z-50 md:z-auto md:flex"
   >
     <!-- Logo Section -->
-    <div class="flex items-center h-16 px-4 mt-4 ml-12"> <!-- Added more top and left margin -->
+    <div class="flex items-center h-16 px-4 mt-4 ml-12">
       <img src="/logo/companylogo.jpg" alt="Logo" class="h-20 w-auto" />
     </div>
 
@@ -17,8 +17,6 @@
       <a routerLink="client-city" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
         <span class="material-icons mr-3">location_city</span> City
       </a>
-
-
       <a routerLink="Cwarehouse-requested" class="flex items-center px-4 py-2 rounded-md hover:text-blue-600 hover:bg-gray-100">
         <span class="material-icons mr-3">inventory_2</span> Accepted Warehouse
       </a>
@@ -27,19 +25,18 @@
       <div class="space-y-1">
         <a (click)="toggleHistory()" class="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-gray-100 cursor-pointer">
           <span class="material-icons mr-3">history</span> History
-          <span  class="material-icons ml-auto" *ngIf="!isHistoryOpen">expand_more</span>
-          <span     class="material-icons ml-auto" *ngIf="isHistoryOpen">expand_less</span>
+          <span class="material-icons ml-auto" *ngIf="!isHistoryOpen">expand_more</span>
+          <span class="material-icons ml-auto" *ngIf="isHistoryOpen">expand_less</span>
         </a>
         <div *ngIf="isHistoryOpen" class="ml-8 space-y-1">
           <a routerLink="CcheckInhistory" class="block text-gray-600 px-4 py-2 rounded-md hover:bg-gray-100">Check In History</a>
           <a routerLink="Ccheckouthistory" class="block text-gray-600 px-4 py-2 rounded-md hover:bg-gray-100">Check Out History</a>
         </div>
 
-
         <a (click)="togglecheckout()" class="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-gray-100 cursor-pointer">
           <span class="material-icons mr-3">inventory_2</span> Checkout-Request
-          <span  class="material-icons ml-auto" *ngIf="!ischeckout ">expand_more</span>
-          <span     class="material-icons ml-auto" *ngIf="ischeckout">expand_less</span>
+          <span class="material-icons ml-auto" *ngIf="!ischeckout">expand_more</span>
+          <span class="material-icons ml-auto" *ngIf="ischeckout">expand_less</span>
         </a>
         <div *ngIf="ischeckout" class="ml-8 space-y-1">
           <a routerLink="C-warehouseCheckout-requested" class="block text-gray-600 px-4 py-2 rounded-md hover:bg-gray-100">Request checkout</a>
@@ -65,9 +62,9 @@
   </aside>
 
   <!-- Main Content -->
-  <div class="flex-1 flex flex-col ">
+  <div class="flex-1 flex flex-col">
     <!-- Top Navbar -->
-    <header class="flex items-center justify-between h-16 top-navbar bg-white border-b border-gray-200 px-4 sticky">
+    <header class="flex items-center justify-between h-16 top-navbar bg-white border-b border-gray-200 px-4 sticky font-creepster"> <!-- Font class added here -->
       <div class="relative flex-1">
         <!-- <input
           type="text"
@@ -93,7 +90,7 @@
         </div>
       </div>
     </header>
-    <div class="overflow-y-auto p-2 mt-0 bg-gray-50">
+    <div class="overflow-y-auto p-2 mt-0 bg-gray-50 font-creepster"> <!-- Font class added here -->
       <router-outlet></router-outlet>
     </div>
   </div>

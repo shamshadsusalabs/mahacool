@@ -94,7 +94,9 @@ export class ClientService {
   markPasswordUpdated(clientId: string): Observable<any> {
     return this.http.patch<any>(`${this.apiUrl1}/status`, { clientId });
   }
-
+  getClientforInvoice(customerID: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/invoice-details/${customerID}`);
+  }
 
 
 
@@ -124,7 +126,7 @@ export class ClientService {
     formData.append('file', file); // Append the file to formData
 
     // Make POST request to the upload endpoint
-    return this.http.post(`${this. apiUrl4}upload/${clientId}`, formData);
+    return this.http.post(`${this. apiUrl4}/upload/${clientId}`, formData);
   }
 
 

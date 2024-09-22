@@ -23,9 +23,23 @@
 
   <!-- Grand Total Payable -->
   <div class="bg-blue-100 p-4 rounded-lg shadow-md mt-6">
-    <h3 class="text-xl font-semibold">Grand Total Payable</h3>
-    <p class="text-2xl font-bold text-blue-600">
-      ₹{{ calculateGrandTotalPayable() }}
-    </p>
+    <h3 class="text-xl font-semibold">Payment Summary</h3>
+
+    <div class="flex justify-between">
+      <div>
+        <p class="text-lg font-medium">Total Paid:</p>
+        <p class="text-2xl font-bold text-blue-600">₹{{ customerInvoice?.totalPaidAmount || 0 }}</p>
+      </div>
+
+      <div>
+        <p class="text-lg font-medium">Remaining Amount:</p>
+        <p class="text-2xl font-bold text-yellow-600">
+          ₹{{ (customerInvoice?.unpaidRemainingAmount || 0) | number:'1.0-0' }}
+        </p>
+
+      </div>
+    </div>
   </div>
 </div>
+
+
