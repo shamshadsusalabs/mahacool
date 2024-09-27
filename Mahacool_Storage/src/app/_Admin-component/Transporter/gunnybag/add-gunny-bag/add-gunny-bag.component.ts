@@ -7,13 +7,14 @@ import { Rack, RackService } from '../../../../_Service/rack.service';
 import { GunnyBagService } from '../../../../_Service/gunny-bag.service';
 import { catchError, of } from 'rxjs';
 import Swal from 'sweetalert2';
-import { interval, switchMap } from 'rxjs';
+import { WeightService } from '../../../../_Service/weight.service';
+
 @Component({
   selector: 'app-add-gunny-bag',
   standalone: true,
-  imports: [FormsModule,CommonModule,ReactiveFormsModule],
+  imports: [FormsModule, CommonModule, ReactiveFormsModule],
   templateUrl: './add-gunny-bag.component.html',
-  styleUrl: './add-gunny-bag.component.css'
+  styleUrls: ['./add-gunny-bag.component.css']
 })
 export class AddGunnyBagComponent {
   cities: City[] = [];
@@ -30,20 +31,36 @@ export class AddGunnyBagComponent {
   @Output() formSubmitted = new EventEmitter<any>();
   @Output() modalClosed = new EventEmitter<void>();
   errorMessage!: string;
+  weight: string = '';
 
-  constructor(private fb: FormBuilder,private cityService: CitiesService,private warehouseservice: WarehouseService, private rackservice: RackService,  private gunnyBagService: GunnyBagService  ) {}
+  constructor(
+    private fb: FormBuilder,
+    private cityService: CitiesService,
+    private warehouseservice: WarehouseService,
+    private rackservice: RackService,
+    private gunnyBagService: GunnyBagService,
+    private weightService: WeightService
+  ) {}
 
   ngOnInit(): void {
     this.checkInForm = this.fb.group({
       customerId: ['', [Validators.required, Validators.pattern(/^[0-9]{6}$/)]],
       dryFruits: this.fb.array([this.createDryFruitGroup()])
     });
-   this.getAllCities();
-    // Subscribe to weight data
-    this.subscribeToWeightUpdates();
-                                                                                                                                                                                                                                                                                                       
-  }
 
+    this.getAllCities();
+
+    // Subscribe to weight data
+    this.weightService.getRealTimeWeight().subscribe(
+      (newWeight) => {
+        this.weight = newWeight; // Update the weight in real time
+        this.updateDryFruitWeights(newWeight);
+      },
+      (error) => {
+        console.error('Error receiving weight data', error);
+      }
+    );
+  }
 
   get dryFruits(): FormArray {
     return this.checkInForm.get('dryFruits') as FormArray;
@@ -53,14 +70,10 @@ export class AddGunnyBagComponent {
     return this.fb.group({
       name: ['', Validators.required],
       typeOfSack: ['', Validators.required],
-      weight: [0, [Validators.required, Validators.min(1)]],
-
+      weight: ['000.00', [Validators.required, Validators.min(1)]], // Default format
       cityName: ['', Validators.required],
       warehouseName: ['', Validators.required],
       rackName: ['', Validators.required],
-
-
-
     });
   }
 
@@ -70,7 +83,7 @@ export class AddGunnyBagComponent {
     const newDryFruitGroup = this.fb.group({
       name: ['', Validators.required],
       typeOfSack: ['', Validators.required],
-      weight: [0, [Validators.required, Validators.min(1)]],
+      weight: ['000.00', [Validators.required, Validators.min(1)]], // Default format
       cityName: [firstDryFruit?.cityName || '', Validators.required],
       warehouseName: [firstDryFruit?.warehouseName || '', Validators.required],
       rackName: [firstDryFruit?.rackName || '', Validators.required]
@@ -78,46 +91,10 @@ export class AddGunnyBagComponent {
 
     this.dryFruits.push(newDryFruitGroup);
   }
-  weight: string = '';
-  subscribeToWeightUpdates(): void {
-    this.gunnyBagService.getWeight().subscribe(
-      data => {
-        console.log("Raw Weight Data:", data.weight);
-        this.weight = this.parseWeight(data.weight);
-        console.log("Cleaned Weight:", this.weight);
-
-        // Update the weight field if a new weight is received
-        if (parseFloat(this.weight) > 0) {
-          this.updateWeightField(parseFloat(this.weight));
-          this.addDryFruit();
-        }
-      },
-      error => console.error('Error fetching weight data:', error)
-    );
-  }
-
-  parseWeight(rawWeight: string): string {
-    const match = rawWeight.match(/\d+\.\d+|\d+/);
-    return match ? `${parseFloat(match[0])} kg` : '0 kg';
-  }
-
-  updateWeightField(weight: number): void {
-    // Find the last dry fruit form and update its weight field
-    const lastDryFruit = this.dryFruits.controls[this.dryFruits.length - 1];
-    if (lastDryFruit) {
-      lastDryFruit.patchValue({ weight });
-    }
-  }                          
-  removeDryFruit(index: number): void {
-    this.dryFruits.removeAt(index);
-  }
-
-
 
   closeModal(): void {
     this.modalClosed.emit();
   }
-
 
   getAllCities(): void {
     this.cityService.getAllCities().subscribe(
@@ -139,9 +116,6 @@ export class AddGunnyBagComponent {
     }
   }
 
-
-
-
   getAllwarehouses(): void {
     const cityId = localStorage.getItem('selectedCityId');
 
@@ -159,14 +133,13 @@ export class AddGunnyBagComponent {
     );
   }
 
-
   onWarehouseChange(event: Event): void {
     const selectedWarehouseId = (event.target as HTMLSelectElement).value;
     if (selectedWarehouseId) {
       // Save the selected warehouse ID as a single value
       localStorage.setItem('selectedWarehouseId', selectedWarehouseId);
       console.log('Selected Warehouse ID:', selectedWarehouseId);
-      this. getAllracks();
+      this.getAllracks();
     }
   }
 
@@ -187,12 +160,51 @@ export class AddGunnyBagComponent {
     );
   }
 
-
   onRackChange(event: Event): void {
     const selectedRackId = (event.target as HTMLSelectElement).value;
     console.log('Selected Rack ID:', selectedRackId);
     // Perform any additional actions needed on rack selection
   }
+
+  onWeightInput(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    let value = parseFloat(input.value);
+
+    if (isNaN(value)) {
+      console.error('Invalid weight value:', input.value);
+      return;
+    }
+
+    // Ensure value is formatted to 074.89 (5 digits with 2 decimals)
+    const formattedValue = this.formatWeight(value);
+    input.value = formattedValue; // Updates the input value to the formatted version
+
+    // Update weight in form
+    this.dryFruits.controls.forEach(control => {
+      control.get('weight')?.setValue(formattedValue);
+    });
+  }
+
+  updateDryFruitWeights(newWeight: string): void {
+    // Clean weight data (remove any non-numeric characters)
+    let numericWeight = parseFloat(newWeight.replace(/[^0-9.]/g, ''));
+
+    if (!isNaN(numericWeight)) {
+      const formattedWeight = this.formatWeight(numericWeight);
+
+      this.dryFruits.controls.forEach(control => {
+        if (!control.get('weight')?.value) {
+          control.get('weight')?.setValue(formattedWeight); // Set formatted weight
+        }
+      });
+    }
+  }
+
+  formatWeight(weight: number): string {
+    // Format to always have 5 digits with 2 decimal places (e.g., 074.89)
+    return weight.toFixed(2).padStart(6, '0'); // Ensures leading zeroes
+  }
+
   onSubmit(): void {
     // Validate the form
     if (this.checkInForm.invalid) {
@@ -239,9 +251,12 @@ export class AddGunnyBagComponent {
             text: 'Form submitted successfully.'
           });
           this.formSubmitted.emit(response);
-          this. closeModal();
+
+          // Reset only the weight fields in the dryFruits FormArray
+          this.dryFruits.controls.forEach(control => {
+            control.get('weight')?.reset('000.00'); // Reset weight to '000.00'
+          });
         }
       });
   }
 }
-                                                                

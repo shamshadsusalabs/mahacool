@@ -5,17 +5,18 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 interface DryFruit {
   cityName: string;
-  name: string;
+  warehouseName: string;
   rackName: string;
+  dateCheckIN: string;
+  name: string;
   recordId: string;
   typeOfSack: string;
-  warehouseName: string;
   weight: number;
+  customerId: string;
+
 }
 
 interface CheckInHistory {
-
-dateCheckIN: string;
   dryFruits: DryFruit[];
   _id: string;
 }
@@ -24,6 +25,7 @@ interface Item {
   _id: string;
   checkInHistory: CheckInHistory[];
   checkOutHistory: any[];
+
   customerId: string;
   totalWeightByFruit: Record<string, number>;
 }
@@ -37,12 +39,13 @@ interface Item {
   styleUrl: './allhistory.component.css'
 })
 export class AllhistoryComponent {
-  items: Item[] = [];
-  paginatedItems: Item[] = [];
-  searchTerm: string = '';
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
-  totalPages: number = 1;
+  items: Item[] = []; // All items fetched from the service
+  filteredItems: Item[] = []; // Items after filtering
+  paginatedItems: DryFruit[] = []; // Items for the current page
+  selectedDate: string | null = null; // Date picker value for filtering by dateCheckout
+  searchTerm: string = ''; // Search bar value
+  currentPage: number = 1; // Current pagination page
+  itemsPerPage: number = 5; // Items to show per page
 
   constructor(private gunnyBagService: GunnyBagService) {}
 
@@ -51,7 +54,6 @@ export class AllhistoryComponent {
   }
 
   fetchData() {
-    // Show loading indicator
     Swal.fire({
       title: 'Fetching data...',
       text: 'Please wait while the data is being fetched.',
@@ -63,90 +65,90 @@ export class AllhistoryComponent {
 
     this.gunnyBagService.getAllCustomerHistories().subscribe({
       next: (data) => {
-        console.log('Fetched data:', data); // Debugging line
-        this.items = data; // Assuming `data` is an array of items
-        this.applyFilter(); // Apply filter after fetching data
-
-        // Close the loading indicator automatically
+        this.items = data;
+        this.filteredItems = data; // Initialize filtered items
+        this.updatePaginatedItems(); // Update pagination on fetch
         Swal.close();
       },
       error: (error) => {
         console.error('Error fetching data:', error);
-
-        // Close the loading indicator and show an error message
         Swal.fire({
           icon: 'error',
           title: 'Failed to Fetch Data',
           text: 'An error occurred while fetching the data. Please try again.',
           showConfirmButton: false,
-          timer: 3000 // Close the alert automatically after 3 seconds
+          timer: 3000
         });
       }
     });
   }
 
-
-
-  applyFilter(): void {
-    console.log('Applying filter with searchTerm:', this.searchTerm); // Debugging line
-    let filteredItems = this.items;
-
-    if (this.searchTerm) {
-      filteredItems = this.items.filter(item =>
-        item.customerId.toLowerCase().includes(this.searchTerm.toLowerCase())
+  // Filter data by dateCheckout
+  filterDataByDate() {
+    if (this.selectedDate) {
+      this.filteredItems = this.items.filter(item =>
+        item.checkOutHistory.some(checkOut =>
+          checkOut.dryFruits.some((dryFruit: { dateCheckout: string | number | Date; }) =>
+            new Date(dryFruit.dateCheckout).toISOString().split('T')[0] === this.selectedDate
+          )
+        )
       );
+    } else {
+      this.filteredItems = this.items; // No date selected, show all items
     }
-
-    this.totalPages = Math.ceil(filteredItems.length / this.itemsPerPage);
-    this.paginateItems(filteredItems);
-    console.log('Filtered items:', this.paginatedItems); // Debugging line
+    this.currentPage = 1; // Reset to first page after filtering
+    this.updatePaginatedItems(); // Update pagination after filtering
   }
 
-  paginateItems(items: Item[]): void {
-    if (items.length === 0) {
-      this.paginatedItems = [];
-      this.totalPages = 1;
-      return;
+  // Search data in checkOutHistory
+  searchData() {
+    const lowerCaseTerm = this.searchTerm.toLowerCase();
+    this.filteredItems = this.items.filter(item =>
+      item.checkOutHistory.some(checkOut =>
+        checkOut.dryFruits.some((dryFruit: { cityName: string; warehouseName: string; rackName: string; }) =>
+          dryFruit.cityName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.warehouseName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.rackName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.rackName.toLowerCase().includes(lowerCaseTerm)
+        )
+      )
+    );
+    this.currentPage = 1; // Reset to first page after searching
+    this.updatePaginatedItems(); // Update pagination after searching
+  }
+
+  // Pagination methods
+  updatePaginatedItems() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    // Flattening filteredItems to get DryFruit objects from checkOutHistory
+    const allDryFruits: DryFruit[] = this.filteredItems.flatMap(item =>
+      item.checkOutHistory.flatMap(checkOut => checkOut.dryFruits)
+    );
+
+    this.paginatedItems = allDryFruits.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedItems();
     }
-
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = this.currentPage * this.itemsPerPage;
-    this.paginatedItems = items.slice(start, end);
   }
 
-  onSearch(): void {
-    this.applyFilter(); // Apply the filter
-    this.currentPage = 1; // Reset to the first page after searching
-  }
-
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.applyFilter(); // Reapply filter to get paginated items for the current page
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedItems();
     }
   }
 
-  openAddModalis = false;
+  get totalPages() {
+    const totalDryFruits = this.filteredItems.flatMap(item =>
+      item.checkOutHistory.flatMap(checkOut => checkOut.dryFruits)
+    ).length;
 
-  openAddModal() {
-    this. openAddModalis = true;
+    return Math.ceil(totalDryFruits / this.itemsPerPage);
   }
-
-  closeModalAdd() {
-    this.openAddModalis = false;
-  }
-
-
-  isModalOpen = false;
-
-  openModal(): void {
-    this.isModalOpen = true;
-  }
-
-  closeModal(): void {
-    this.isModalOpen = false;
-  }
-
-
-
 }

@@ -6,7 +6,7 @@ import { io, Socket } from 'socket.io-client';
 })
 export class SocketService {
   private socket: Socket;
-  private readonly url: string = 'http://localhost:3000'; // Replace with your server URL
+  private readonly url: string = 'https://mahacool-436606.el.r.appspot.com'; // Replace with your server URL
 
   constructor() {
     this.socket = io(this.url, {

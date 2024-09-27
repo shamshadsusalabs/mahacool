@@ -14,7 +14,7 @@ export interface Driver {
 })
 export class DriverService {
 
-  private apiUrl = 'http://localhost:3000/api/driver'; // Replace with your actual API endpoint
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/driver'; // Replace with your actual API endpoint
 
   constructor(private http: HttpClient) { }
 

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class WarehouseCheckoutrequestService {
 
-  private apiUrl = 'http://localhost:3000/api/warehouseCheckoutRequested';  // Change this to your backend URL
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/warehouseCheckoutRequested';  // Change this to your backend URL
 
   constructor(private http: HttpClient) { }
 

@@ -33,10 +33,10 @@
   background: rgba(0, 0, 0, 0.4); /* Dark background with slight transparency */
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 15px 2px #00ffcc; /* Glowing border */
-  font-family: 'Casablanca', serif; /* Font choice */
+  font-family: 'Helvetica', 'sans-serif'; /* Correct font name */
   color: #ffffff; /* White text */
-  font-weight: 900; /* Bold text */
-  font-size: 22px; /* Slightly larger font size */
+  font-weight: 500; /* A standard font-weight (can range from 100 to 900) */
+  font-size: medium; /* Slightly larger font size */
   transition: transform 0.3s ease;
 }
 

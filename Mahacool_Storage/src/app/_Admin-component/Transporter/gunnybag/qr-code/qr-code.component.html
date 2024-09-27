@@ -35,116 +35,102 @@
 
 
       <!-- QR Code Section -->
-<div id="qrCodeSection" *ngIf="qrCodes.length > 0">
-  <!-- Main Container for QR Codes -->
-  <div class="flex flex-wrap justify-center gap-8 p-6 bg-gray-50">
+      <div id="qrCodeSection" *ngIf="qrCodes.length > 0">
+        <!-- Main Container for QR Codes -->
+        <div class="flex flex-wrap justify-center gap-8 p-6 bg-gray-50">
 
-    <ng-container *ngFor="let qr of qrCodes">
-      <!-- Each QR Code and Clone Pair -->
-      <div class="flex flex-row gap-8 mb-6">
+          <ng-container *ngFor="let qr of qrCodes">
+            <!-- Each QR Code and Clone Pair -->
+            <div class="flex flex-row gap-8 mb-6">
 
-        <!-- Original QR Code -->
-        <div class="border-4 border-black p-4 rounded-lg shadow-lg bg-white" style="width: 376px; height: auto;">
-          <!-- Header Section (Business Name and Title) -->
-          <div class="text-center mb-4">
-            <div class="text-4xl font-extrabold text-black tracking-widest uppercase">Mahacool</div>
-            <div class="text-xl font-bold tracking-wide text-blue-600 uppercase mt-1">Cold Storage</div>
-          </div>
+              <!-- Original QR Code -->
+              <div class="border-4 border-black p-4 rounded-lg shadow-lg bg-white" style="width: 376px; height: auto;">
+                <div class="text-center font-bold text-xl mb-2">Original</div> <!-- Original Label -->
+                <div class="text-center mb-4">
+                  <div class="text-4xl font-extrabold text-black tracking-widest uppercase">Mahacool</div>
+                  <div class="text-xl font-bold tracking-wide text-blue-600 uppercase mt-1">Cold Storage</div>
+                </div>
 
-          <!-- Date and Contact Information -->
-          <div class="border-t-2 border-b-2 border-gray-700 py-2 px-2 mb-4">
-            <div class="flex justify-between items-center">
-              <div class="text-left text-gray-800">
-                <p class="text-lg font-semibold"><strong>Bussiness-Name:</strong>{{ qr.bussinessName }}</p>
-                <p class="text-lg font-semibold"><strong>Date:</strong> {{ qr.dateCheckIN | date: 'mediumDate' }}</p>
-                <p class="text-lg font-semibold"><strong>Weight:</strong> {{ qr.weight }} kg</p>
+                <!-- Date and Contact Information -->
+                <div class="border-t-2 border-b-2 border-gray-700 py-2 px-2 mb-4">
+                  <div class="flex justify-between items-center">
+                    <div class="text-left text-gray-800">
+                      <p class="text-lg font-semibold"><strong>Bussiness-Name:</strong>{{ qr.bussinessName }}</p>
+                      <p class="text-lg font-semibold"><strong>Date:</strong> {{ qr.dateCheckIN | date: 'mediumDate' }}</p>
+                      <p class="text-lg font-semibold"><strong>Weight:</strong> {{ qr.weight }} kg</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Company Logo -->
+                <div class="flex justify-center my-4">
+                  <img src="logo/invoice.jpg" alt="Company Logo" class="w-24 h-24 border-4 border-black rounded-full shadow-md">
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="flex justify-center my-4">
+                  <img [src]="qr.qrData" alt="QR Code" class="border-4 border-black rounded-sm shadow-md" width="120" height="120">
+                </div>
+
+                <!-- Branding (Company Website and Small Logo) -->
+                <div class="border-t border-b border-gray-400 py-2 flex justify-between items-center text-center">
+                  <div class="text-xl font-extrabold text-blue-600" style="font-family: 'Arial', sans-serif;">www.mahacool.com</div>
+                </div>
+
+                <!-- GSTN and Address Info -->
+                <div class="text-center mt-4 text-gray-700 text-sm">
+                  <p><strong>GSTN:</strong> 07AHFPA6877M1ZW</p>
+                  <p><strong>Email:</strong> gaurav&#64;anakeen.net</p>
+                  <p><strong>Phone:</strong> +91-9818647283</p>
+                </div>
+              </div>
+
+              <!-- Clone of QR Code (Same Design) -->
+              <div class="border-4 border-black p-4 rounded-lg shadow-lg bg-white" style="width: 376px; height: auto;">
+                <div class="text-center font-bold text-xl mb-2">Copy</div> <!-- Copy Label -->
+                <div class="text-center mb-4">
+                  <div class="text-4xl font-extrabold text-black tracking-widest uppercase">Mahacool</div>
+                  <div class="text-xl font-bold tracking-wide text-blue-600 uppercase mt-1">Cold Storage</div>
+                </div>
+
+                <!-- Date and Contact Information -->
+                <div class="border-t-2 border-b-2 border-gray-700 py-2 px-2 mb-4">
+                  <div class="flex justify-between items-center">
+                    <div class="text-left text-gray-800">
+                      <p class="text-lg font-semibold"><strong>Bussiness-Name:</strong>{{ qr.bussinessName }}</p>
+                      <p class="text-lg font-semibold"><strong>Date:</strong> {{ qr.dateCheckIN | date: 'mediumDate' }}</p>
+                      <p class="text-lg font-semibold"><strong>Weight:</strong> {{ qr.weight }} kg</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Company Logo -->
+                <div class="flex justify-center my-4">
+                  <img src="logo/invoice.jpg" alt="Company Logo" class="w-24 h-24 border-4 border-black rounded-full shadow-md">
+                </div>
+
+                <!-- QR Code Section -->
+                <div class="flex justify-center my-4">
+                  <img [src]="qr.qrData" alt="QR Code" class="border-4 border-black rounded-sm shadow-md" width="120" height="120">
+                </div>
+
+                <!-- Branding (Company Website and Small Logo) -->
+                <div class="border-t border-b border-gray-400 py-2 flex justify-between items-center text-center">
+                  <div class="text-xl font-extrabold text-blue-600" style="font-family: 'Arial', sans-serif;">www.mahacool.com</div>
+                </div>
+
+                <!-- GSTN and Address Info -->
+                <div class="text-center mt-4 text-gray-700 text-sm">
+                  <p><strong>GSTN:</strong> 07AHFPA6877M1ZW</p>
+                  <p><strong>Email:</strong> gaurav&#64;anakeen.net</p>
+                  <p><strong>Phone:</strong> +91-9818647283</p>
+                </div>
               </div>
 
             </div>
-          </div>
-
-          <!-- Company Logo -->
-          <div class="flex justify-center my-4">
-            <img src="logo/invoice.jpg" alt="Company Logo" class="w-24 h-24 border-4 border-black rounded-full shadow-md">
-          </div>
-
-          <!-- QR Code Section -->
-          <div class="flex justify-center my-4">
-            <img [src]="qr.qrData" alt="QR Code" class="border-4 border-black rounded-sm shadow-md" width="120" height="120">
-          </div>
-
-          <!-- Branding (Company Website and Small Logo) -->
-          <div class="border-t border-b border-gray-400 py-2 flex justify-between items-center text-center">
-            <div class="text-xl font-extrabold  text-blue-600" style="font-family: 'Arial', sans-serif;">mahacool.com</div>
-            <img src="logo/companylogo.jpg" alt="Company Logo" class="w-12 h-12 rounded-full border-2 border-black shadow-md">
-          </div>
-
-          <!-- GSTN and Address Info -->
-          <div class="text-center mt-4 text-gray-700 text-sm">
-            <p><strong>GSTN:</strong> 07AHFPA6877M1ZW</p>
-            <p><strong>Email:</strong> gaurav&#64;anakeen.net</p>
-            <p><strong>Phone:</strong> +91-9818647283</p>
-          </div>
+          </ng-container>
         </div>
-
-        <!-- Clone of QR Code (Same Design) -->
-        <div class="border-4 border-black p-4 rounded-lg shadow-lg bg-white" style="width: 376px; height: auto;">
-          <!-- Header Section (Business Name and Title) -->
-          <div class="text-center mb-4">
-            <div class="text-4xl font-extrabold text-black tracking-widest uppercase">Mahacool</div>
-            <div class="text-xl font-bold tracking-wide text-blue-600 uppercase mt-1">Cold Storage</div>
-          </div>
-
-          <!-- Date and Contact Information -->
-          <div class="border-t-2 border-b-2 border-gray-700 py-2 px-2 mb-4">
-            <div class="flex justify-between items-center">
-              <div class="text-left text-gray-800">
-                <p class="text-lg font-semibold"><strong>Bussiness-Name:</strong>{{ qr.bussinessName }}</p>
-                <p class="text-lg font-semibold"><strong>Date:</strong> {{ qr.dateCheckIN | date: 'mediumDate' }}</p>
-                <p class="text-lg font-semibold"><strong>Weight:</strong> {{ qr.weight }} kg</p>
-              </div>
-
-            </div>
-          </div>
-
-          <!-- Company Logo -->
-          <div class="flex justify-center my-4">
-            <img src="logo/invoice.jpg" alt="Company Logo" class="w-24 h-24 border-4 border-black rounded-full shadow-md">
-          </div>
-
-          <!-- QR Code Section -->
-          <div class="flex justify-center my-4">
-            <img [src]="qr.qrData" alt="QR Code" class="border-4 border-black rounded-sm shadow-md" width="120" height="120">
-          </div>
-
-          <!-- Branding (Company Website and Small Logo) -->
-          <div class="border-t border-b border-gray-400 py-2 flex justify-between items-center text-center">
-            <div class="text-xl font-extrabold  text-blue-600" style="font-family: 'Arial', sans-serif;">mahacool.com</div>
-            <img src="logo/companylogo.jpg" alt="Company Logo" class="w-12 h-12 rounded-full border-2 border-black shadow-md">
-          </div>
-
-          <!-- GSTN and Address Info -->
-          <div class="text-center mt-4 text-gray-700 text-sm">
-            <p><strong>GSTN:</strong> 07AHFPA6877M1ZW</p>
-            <p><strong>Email:</strong> gaurav&#64;anakeen.net</p>
-            <p><strong>Phone:</strong> +91-9818647283</p>
-          </div>
-        </div>
-
       </div>
-    </ng-container>
-  </div>
-</div>
-
-
-
-
-
-
-
-
-
-
 
 
 

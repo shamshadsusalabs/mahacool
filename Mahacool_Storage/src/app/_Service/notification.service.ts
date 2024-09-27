@@ -7,13 +7,13 @@ import { io, Socket } from 'socket.io-client';
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:3000/api/notification'; // Adjust the URL as needed
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/notification'; // Adjust the URL as needed
   private socket: Socket;
   private notificationsSubject = new Subject<any[]>();
 
   constructor(private http: HttpClient) {
     // Initialize Socket.io client
-    this.socket = io('http://localhost:3000'); // Adjust the URL as needed
+    this.socket = io('https://mahacool-436606.el.r.appspot.com'); // Adjust the URL as needed
 
     // Listen for new notifications
     this.socket.on('new-notification', (notification) => {

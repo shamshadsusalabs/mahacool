@@ -2,27 +2,25 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GunnyBagService } from '../../../../_Service/gunny-bag.service';
-
 import { RouterLink, RouterModule, RouterOutlet } from '@angular/router';
 import { AddGunnyBagComponent } from '../add-gunny-bag/add-gunny-bag.component';
 import { QrCodeComponent } from '../qr-code/qr-code.component';
 import Swal from 'sweetalert2';
 
-
 interface DryFruit {
   cityName: string;
-  name: string;
+  warehouseName: string;
   rackName: string;
+  dateCheckIN: string;
+  name: string;
   recordId: string;
   typeOfSack: string;
-  warehouseName: string;
   weight: number;
+  customerId: string;
 
 }
 
 interface CheckInHistory {
-
-dateCheckIN: string;
   dryFruits: DryFruit[];
   _id: string;
 }
@@ -31,6 +29,7 @@ interface Item {
   _id: string;
   checkInHistory: CheckInHistory[];
   checkOutHistory: any[];
+
   customerId: string;
   totalWeightByFruit: Record<string, number>;
 }
@@ -38,17 +37,18 @@ interface Item {
 @Component({
   selector: 'app-bag',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RouterOutlet,RouterModule,AddGunnyBagComponent,QrCodeComponent ],
+  imports: [CommonModule, FormsModule, RouterLink, RouterOutlet, RouterModule, AddGunnyBagComponent, QrCodeComponent],
   templateUrl: './bag.component.html',
   styleUrls: ['./bag.component.css']
 })
 export class BagComponent implements OnInit {
-  items: Item[] = [];
-  paginatedItems: Item[] = [];
-  searchTerm: string = ''; // This will be used to search both customerId and rackName
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
-  totalPages: number = 1;
+  items: Item[] = []; // All items fetched from the service
+  filteredItems: Item[] = []; // Items after filtering
+  paginatedItems: DryFruit[] = []; // Items for the current page
+  selectedDate: string | null = null; // Date picker value
+  searchTerm: string = ''; // Search bar value
+  currentPage: number = 1; // Current pagination page
+  itemsPerPage: number = 5; // Items to show per page
 
   constructor(private gunnyBagService: GunnyBagService) {}
 
@@ -68,9 +68,11 @@ export class BagComponent implements OnInit {
 
     this.gunnyBagService.getAllCustomerHistories().subscribe({
       next: (data) => {
-        console.log('Fetched data:', data); // Debugging line
-        this.items = data; // Assuming data is an array of items
-        this.applyFilter(); // Apply filter after fetching data
+        this.items = data;
+        console.log(this.items);
+        this.filteredItems = data;
+        console.log(this.filteredItems); // Initialize filtered items
+        this.updatePaginatedItems(); // Update pagination on fetch
         Swal.close();
       },
       error: (error) => {
@@ -86,77 +88,74 @@ export class BagComponent implements OnInit {
     });
   }
 
-
-
-  applyFilter(): void {
-    // Debugging the search term
-    console.log('Applying filter with searchTerm:', this.searchTerm);
-
-    const searchTermLower = this.searchTerm.trim().toLowerCase(); // Process search term
-    console.log('Processed searchTerm:', searchTermLower);
-
-    // Filter items based on customerId, cityName, rackName, and warehouseName
-    let filteredItems = this.items.filter(item => {
-      // Convert customerId to string and lowercase
-      const customerIdLower = item.customerId.toString().trim().toLowerCase();
-
-      // Check if customerId matches the search term
-      const customerIdMatches = customerIdLower.includes(searchTermLower);
-
-      // Check if any checkInHistory matches based on cityName, rackName, or warehouseName
-      const checkInHistoryMatches = item.checkInHistory.some(history => {
-        return history.dryFruits.some(dryFruit =>
-          dryFruit.rackName.toLowerCase().includes(searchTermLower) ||
-          dryFruit.warehouseName.toLowerCase().includes(searchTermLower) ||
-          dryFruit.cityName.toLowerCase().includes(searchTermLower)
-        );
-      });
-
-      // Return item if either customerId or any checkInHistory matches
-      return customerIdMatches || checkInHistoryMatches;
-    });
-
-    // Debugging filtered results
-    console.log('Filtered items:', filteredItems);
-
-    // Update pagination and display results
-    this.totalPages = Math.ceil(filteredItems.length / this.itemsPerPage);
-    this.paginateItems(filteredItems);
-  }
-
-
-
-
-
-
-
-
-
-
-  paginateItems(items: Item[]): void {
-    if (items.length === 0) {
-      this.paginatedItems = [];
-      this.totalPages = 1;
-      return;
+  filterDataByDate() {
+    if (this.selectedDate) {
+      this.filteredItems = this.items.filter(item =>
+        item.checkInHistory.some(checkIn =>
+          checkIn.dryFruits.some(dryFruit =>
+            new Date(dryFruit.dateCheckIN).toISOString().split('T')[0] === this.selectedDate
+          )
+        )
+      );
+    } else {
+      this.filteredItems = this.items; // No date selected, show all items
     }
-
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = this.currentPage * this.itemsPerPage;
-    this.paginatedItems = items.slice(start, end);
+    this.currentPage = 1; // Reset to first page after filtering
+    this.updatePaginatedItems(); // Update pagination after filtering
   }
 
-  onSearch(): void {
-    this.applyFilter(); // Apply the filter
-    this.currentPage = 1; // Reset to the first page after searching
+  searchData() {
+    const lowerCaseTerm = this.searchTerm.toLowerCase();
+    this.filteredItems = this.items.filter(item =>
+      item.checkInHistory.some(checkIn =>
+        checkIn.dryFruits.some(dryFruit =>
+          dryFruit.cityName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.warehouseName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.rackName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.customerId.toLowerCase().includes(lowerCaseTerm)
+        )
+      )
+    );
+    this.currentPage = 1; // Reset to first page after searching
+    this.updatePaginatedItems(); // Update pagination after searching
   }
 
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.applyFilter(); // Reapply filter to get paginated items for the current page
+  // Pagination methods
+  updatePaginatedItems() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    // Flattening filteredItems to get DryFruit objects
+    const allDryFruits: DryFruit[] = this.filteredItems.flatMap(item =>
+      item.checkInHistory.flatMap(checkIn => checkIn.dryFruits)
+    );
+
+    this.paginatedItems = allDryFruits.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedItems();
     }
   }
 
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedItems();
+    }
+  }
+
+  get totalPages() {
+    const totalDryFruits = this.filteredItems.flatMap(item =>
+      item.checkInHistory.flatMap(checkIn => checkIn.dryFruits)
+    ).length;
+
+    return Math.ceil(totalDryFruits / this.itemsPerPage);
+  }
+
+  // Modal control methods
   openAddModalis = false;
   openAddModal() {
     this.openAddModalis = true;

@@ -52,7 +52,7 @@ export interface Invoice {
 })
 export class GunnyBagService {
 
-  private apiUrl = 'http://localhost:3000/api/box';  // The provided API endpoint
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/box';  // The provided API endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -66,7 +66,7 @@ export class GunnyBagService {
     return this.http.post(`${this.apiUrl}/remove`, body);
   }
 
-  private apiUrl1 = 'http://localhost:3000/api/CustomerHistory';
+  private apiUrl1 = 'https://mahacool-436606.el.r.appspot.com/api/CustomerHistory';
   postCustomerHistory(customerId: string, checkInHistory: any[]): Observable<any> {
     const body = {
       customerId,
@@ -133,13 +133,13 @@ export class GunnyBagService {
     return this.http.get(`${this.apiUrl1}/dryFruitWeight/${customerId}`);
   }
 
-  private apiUrl3 = 'http://localhost:3000/api/weight';
+  private apiUrl3 = 'https://mahacool-436606.el.r.appspot.com/api/weight';
 
   getWeightData(): Observable<{ weight: number }> {
     return this.http.get<{ weight: number }>(this.apiUrl3);
   }
 
-  private apiUrl5    = 'http://localhost:3000/api/weight';
+  private apiUrl5    = 'https://mahacool-436606.el.r.appspot.com/api/weight';
   getWeight(): Observable<any> {
     return this.http.get<any>(this.apiUrl5);
   }

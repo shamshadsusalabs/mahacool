@@ -13,7 +13,7 @@ export interface Manager {
 })
 export class ManagerService {
 
-  private apiUrl = 'http://localhost:3000/api/manager'; // Replace with your actual API endpoint
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/manager'; // Replace with your actual API endpoint
 
   constructor(private http: HttpClient) { }
 

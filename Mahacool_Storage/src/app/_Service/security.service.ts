@@ -12,7 +12,7 @@ export interface Security {
   providedIn: 'root'
 })
 export class SecurityService {
-  private apiUrl = 'http://localhost:3000/api/security'; // Replace with your actual API endpoint
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/security'; // Replace with your actual API endpoint
 
   constructor(private http: HttpClient) { }
 

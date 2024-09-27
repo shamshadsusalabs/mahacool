@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 })
 export class AdminService {
 
-  private baseUrl = 'http://localhost:3000/api/admin'; // API base URL
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/admin'; // API base URL
 
   constructor(private http: HttpClient) {}
 

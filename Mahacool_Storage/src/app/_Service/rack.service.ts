@@ -26,7 +26,7 @@ export interface Story {
 export class RackService {
 
 
-  private baseUrl = 'http://localhost:3000/api/rack';
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/rack';
 
   constructor(private http: HttpClient) {}
 
@@ -56,16 +56,16 @@ export class RackService {
 
     if (warehouseId) {
       // If the cityId exists, return the request for the specific city ID
-      return this.http.get(`http://localhost:3000/api/rack/getid?id=${warehouseId}`);
+      return this.http.get(`https://mahacool-436606.el.r.appspot.com/api/rack/getid?id=${warehouseId}`);
     } else {
       // If the cityId does not exist, return the request for all containers
-         return this.http.get("http://localhost:3000/api/rack/all");
+         return this.http.get("https://mahacool-436606.el.r.appspot.com/api/rack/all");
     }
   }
 
 
   getRackBox(warehouseId: string): Observable<any> {
-    return this.http.get(`http://localhost:3000/api/rack/getid?id=${warehouseId}`).pipe(
+    return this.http.get(`https://mahacool-436606.el.r.appspot.com/api/rack/getid?id=${warehouseId}`).pipe(
       catchError(error => {
         console.error('Error fetching rack data:', error);
         return throwError(error);
@@ -92,7 +92,7 @@ export class RackService {
 
 
   getOneRack(id:string){
-    return this.http.get("http://localhost:3000/api/rack/details?id="+ id);
+    return this.http.get("https://mahacool-436606.el.r.appspot.com/api/rack/details?id="+ id);
   }
   addStory(id: string, storyData: { box: number, cap: number, name: string }): Observable<any> {
     const url = `${this.baseUrl}/addstory?id=${id}`;

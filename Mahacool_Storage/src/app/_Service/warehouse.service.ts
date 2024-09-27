@@ -15,7 +15,7 @@ export interface Warehouse {
 })
 export class WarehouseService {
 
-  private baseUrl = 'http://localhost:3000/api/container';
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/container';
 
   constructor(private http: HttpClient) {}
 
@@ -45,10 +45,10 @@ export class WarehouseService {
 
     if (cityId) {
       // If the cityId exists, return the request for the specific city ID
-      return this.http.get(`http://localhost:3000/api/container/getid?id=${cityId}`);
+      return this.http.get(`https://mahacool-436606.el.r.appspot.com/api/container/getid?id=${cityId}`);
     } else {
       // If the cityId does not exist, return the request for all containers
-      return this.http.get("http://localhost:3000/api/container/all");
+      return this.http.get("https://mahacool-436606.el.r.appspot.com/api/container/all");
     }
   }
 
@@ -84,7 +84,7 @@ export class WarehouseService {
     return this.http.get<Warehouse[]>(`${this.baseUrl}/getid?id=${cityId}`);
   }
 
-  private apiUrl = 'http://localhost:3000/api/WarehouseRequested';
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/WarehouseRequested';
 
   createWarehouseRequest(selectedData: any): Observable<any> {
     const body = {

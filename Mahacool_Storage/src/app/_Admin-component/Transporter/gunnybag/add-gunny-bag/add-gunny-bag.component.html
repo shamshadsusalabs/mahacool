@@ -142,6 +142,8 @@
                     <input
                       type="number"
                       id="weight"
+                      [value]="weight"
+                      (input)="onWeightInput($event)"
                       formControlName="weight"
                       class="shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 font-bold text-lg leading-tight focus:outline-none focus:shadow-outline"
                       placeholder="Enter Weight in kg"
@@ -158,27 +160,12 @@
 
 
 
-                <!-- Remove Dry Fruit Button -->
-                <button
-                  type="button"
-                  class="bg-red-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                  (click)="removeDryFruit(i)"
-                >
-                  Remove Dry Fruit
-                </button>
+
               </div>
             </div>
 
             <!-- Add Dry Fruit Button -->
-            <div class="mb-4">
-              <button
-                type="button"
-                class="bg-green-500 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                (click)="addDryFruit()"
-              >
-                Add Another Dry Fruit
-              </button>
-            </div>
+
 
             <!-- Submit Button -->
             <div class="mb-4">

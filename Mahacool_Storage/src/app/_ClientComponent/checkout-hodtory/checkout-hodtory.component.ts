@@ -5,28 +5,28 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 interface DryFruit {
   cityName: string;
-  name: string;
+  warehouseName: string;
   rackName: string;
+  dateCheckIN: string;
+  dateCheckout: string; // Add dateCheckout field
+  name: string;
   recordId: string;
   typeOfSack: string;
-  warehouseName: string;
   weight: number;
-}
-
-interface checkOutHistory
-{
-  date: string;
-  dryFruits: DryFruit[];
-  _id: string;
-}
-
-interface Item {
-  _id: string;
-  checkInHistory: any[];
-  checkOutHistory: checkOutHistory[];
   customerId: string;
-  totalWeightByFruit: Record<string, number>;
+}
 
+interface CheckOutHistory {
+  dryFruits: DryFruit[]; // Update to include DryFruit
+  _id: string;
+}
+
+interface Customer {
+  _id: string;
+  customerId: string;
+  checkInHistory: any[]; // You may choose to include checkInHistory as well
+  checkOutHistory: CheckOutHistory[];
+  totalWeightByFruit: Record<string, number>;
 }
 @Component({
   selector: 'app-checkout-hodtory',
@@ -37,17 +37,20 @@ interface Item {
 })
 export class CheckoutHodtoryComponent {
 
-  items: Item[] = [];
-  paginatedItems: Item[] = [];
+  customers: Customer[] = [];
+  filteredCustomers: Customer[] = [];
+  paginatedDryFruits: DryFruit[] = [];
+  selectedDate: string | null = null;
   searchTerm: string = '';
   currentPage: number = 1;
   itemsPerPage: number = 5;
-  totalPages: number = 1;
 
   constructor(private gunnyBagService: GunnyBagService) {}
+
   ngOnInit() {
-    this.fetchData(); // Fetch data on component initialization
+    this.fetchData();
   }
+
   fetchData() {
     Swal.fire({
       title: 'Fetching data...',
@@ -60,15 +63,21 @@ export class CheckoutHodtoryComponent {
 
     this.gunnyBagService.getCustomerDetails().subscribe({
       next: (data) => {
-        console.log('Fetched data:', data); // Debugging line
-        if (data && typeof data === 'object' && !Array.isArray(data)) {
-          this.items = [data]; // Wrap the single object in an array
-          this.applyFilter(); // Apply filter after fetching data
+        console.log('Fetched data:', data);
+
+        // Check if data is an array
+        if (Array.isArray(data)) {
+          this.customers = data;
+        } else if (data && typeof data === 'object') {
+          this.customers = [data];
         } else {
           console.error('Unexpected data format:', data);
-          this.items = []; // Fallback to empty array
+          this.customers = [];
         }
-        Swal.close(); // Close the loading indicator automatically
+
+        this.filteredCustomers = [...this.customers];
+        this.updatePaginatedItems();
+        Swal.close();
       },
       error: (error) => {
         console.error('Error fetching data:', error);
@@ -77,59 +86,73 @@ export class CheckoutHodtoryComponent {
           title: 'Failed to Fetch Data',
           text: 'An error occurred while fetching the data. Please try again.',
           showConfirmButton: false,
-          timer: 3000 // Close the alert automatically after 3 seconds
+          timer: 3000
         });
       }
     });
   }
 
-
-  applyFilter(): void {
-    console.log('Applying filter with searchTerm:', this.searchTerm); // Debugging line
-    let filteredItems = this.items;
-
-    if (this.searchTerm) {
-      filteredItems = this.items.filter(item =>
-        item.checkOutHistory.some(history =>
-          history.dryFruits.some(dryFruit =>
-            dryFruit.cityName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-            dryFruit.warehouseName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-            dryFruit.rackName.toLowerCase().includes(this.searchTerm.toLowerCase())
+  filterDataByDate() {
+    if (this.selectedDate) {
+      this.filteredCustomers = this.customers.filter(customer =>
+        customer.checkOutHistory.some(checkOut =>
+          checkOut.dryFruits.some(dryFruit =>
+            new Date(dryFruit.dateCheckout).toISOString().split('T')[0] === this.selectedDate
           )
         )
       );
+    } else {
+      this.filteredCustomers = this.customers; // No date selected, show all
     }
-
-    this.totalPages = Math.ceil(filteredItems.length / this.itemsPerPage);
-    this.paginateItems(filteredItems);
-    console.log('Filtered items:', this.paginatedItems); // Debugging line
+    this.currentPage = 1;
+    this.updatePaginatedItems();
   }
 
+  searchData() {
+    const lowerCaseTerm = this.searchTerm.toLowerCase();
+    this.filteredCustomers = this.customers.filter(customer =>
+      customer.checkOutHistory.some(checkOut =>
+        checkOut.dryFruits.some(dryFruit =>
+          dryFruit.cityName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.warehouseName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.rackName.toLowerCase().includes(lowerCaseTerm)
+        )
+      )
+    );
+    this.currentPage = 1;
+    this.updatePaginatedItems();
+  }
 
-  paginateItems(items: Item[]): void {
-    if (items.length === 0) {
-      this.paginatedItems = [];
-      this.totalPages = 1;
-      return;
+  updatePaginatedItems() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    const allDryFruits: DryFruit[] = this.filteredCustomers.flatMap(customer =>
+      customer.checkOutHistory.flatMap(checkOut => checkOut.dryFruits)
+    );
+
+    this.paginatedDryFruits = allDryFruits.slice(startIndex, endIndex);
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedItems();
     }
-
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = this.currentPage * this.itemsPerPage;
-    this.paginatedItems = items.slice(start, end);
   }
 
-  onSearch(): void {
-    this.applyFilter(); // Apply the filter
-    this.currentPage = 1; // Reset to the first page after searching
-  }
-
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.applyFilter(); // Reapply filter to get paginated items for the current page
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedItems();
     }
   }
 
+  get totalPages() {
+    const totalDryFruits = this.filteredCustomers.flatMap(customer =>
+      customer.checkOutHistory.flatMap(checkOut => checkOut.dryFruits)
+    ).length;
 
+    return Math.ceil(totalDryFruits / this.itemsPerPage);
+  }
 }
-

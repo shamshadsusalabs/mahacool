@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
 import { AdminService } from '../../_Service/admin.service';
+import { WeightService } from '../../_Service/weight.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,7 +18,7 @@ export class DashboardComponent {
 
   constructor(
 
-    private adminService: AdminService,
+    private adminService: AdminService,private weightService:  WeightService,
     private route:Router)
 
     {}
@@ -47,5 +48,27 @@ export class DashboardComponent {
   toggleInvoive() {
     this.isInvoices = !this.isInvoices;
   }
+
+
+
+  weight: string = ''; // Variable to store the real-time weight
+
+
+
+  ngOnInit(): void {
+    // Subscribe to the WebSocket data stream
+    this.weightService.getRealTimeWeight().subscribe(
+      (newWeight) => {
+        this.weight = newWeight; // Update the weight in real time
+      },
+      (error) => {
+        console.error('Error receiving weight data', error);
+      }
+    );
+  }
+
+
+
+
 
 }

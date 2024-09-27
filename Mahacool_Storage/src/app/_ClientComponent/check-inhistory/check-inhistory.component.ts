@@ -3,50 +3,54 @@ import Swal from 'sweetalert2';
 import { GunnyBagService } from '../../_Service/gunny-bag.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 interface DryFruit {
   cityName: string;
-  name: string;
+  warehouseName: string;
   rackName: string;
+  dateCheckIN: string;
+  name: string;
   recordId: string;
   typeOfSack: string;
-  warehouseName: string;
   weight: number;
+  customerId: string;
 }
 
 interface CheckInHistory {
-
-dateCheckIN: string;
   dryFruits: DryFruit[];
   _id: string;
 }
 
-interface Item {
+interface Customer {
   _id: string;
+  customerId: string; // Unique identifier for the customer
   checkInHistory: CheckInHistory[];
   checkOutHistory: any[];
-  customerId: string;
   totalWeightByFruit: Record<string, number>;
 }
 
 @Component({
   selector: 'app-check-inhistory',
   standalone: true,
-  imports: [CommonModule,FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './check-inhistory.component.html',
-  styleUrl: './check-inhistory.component.css'
+  styleUrls: ['./check-inhistory.component.css'] // Fixed to `styleUrls`
 })
 export class CheckINhistoryComponent {
-  items: Item[] = [];
-  paginatedItems: Item[] = [];
-  searchTerm: string = '';
-  currentPage: number = 1;
-  itemsPerPage: number = 5;
-  totalPages: number = 1;
+  customers: Customer[] = []; // All customers fetched from the service
+  filteredCustomers: Customer[] = []; // Customers after filtering
+  paginatedDryFruits: DryFruit[] = []; // Dry fruits for the current page
+  selectedDate: string | null = null; // Date picker value
+  searchTerm: string = ''; // Search bar value
+  currentPage: number = 1; // Current pagination page
+  itemsPerPage: number = 5; // Items to show per page
 
   constructor(private gunnyBagService: GunnyBagService) {}
+
   ngOnInit() {
     this.fetchData(); // Fetch data on component initialization
   }
+
   fetchData() {
     Swal.fire({
       title: 'Fetching data...',
@@ -59,15 +63,21 @@ export class CheckINhistoryComponent {
 
     this.gunnyBagService.getCustomerDetails().subscribe({
       next: (data) => {
-        console.log('Fetched data:', data); // Debugging line
-        if (data && typeof data === 'object' && !Array.isArray(data)) {
-          this.items = [data]; // Wrap the single object in an array
-          this.applyFilter(); // Apply filter after fetching data
+        console.log('Fetched data:', data);
+
+        // Check if data is an array
+        if (Array.isArray(data)) {
+          this.customers = data;
+        } else if (data && typeof data === 'object') {
+          this.customers = [data]; // Wrap the single object in an array
         } else {
           console.error('Unexpected data format:', data);
-          this.items = []; // Fallback to empty array
+          this.customers = []; // Fallback to empty array
         }
-        Swal.close(); // Close the loading indicator automatically
+
+        this.filteredCustomers = [...this.customers]; // Initialize filteredCustomers
+        this.updatePaginatedItems(); // Update after fetching
+        Swal.close();
       },
       error: (error) => {
         console.error('Error fetching data:', error);
@@ -82,50 +92,69 @@ export class CheckINhistoryComponent {
     });
   }
 
-  applyFilter(): void {
-    console.log('Applying filter with searchTerm:', this.searchTerm); // Debugging line
-    let filteredItems = this.items;
-
-    if (this.searchTerm) {
-      filteredItems = this.items.filter(item =>
-        item.checkOutHistory.some(history =>
-          history.dryFruits.some((dryFruit: { cityName: string; warehouseName: string; rackName: string; }) =>
-            dryFruit.cityName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-            dryFruit.warehouseName.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-            dryFruit.rackName.toLowerCase().includes(this.searchTerm.toLowerCase())
+  filterDataByDate() {
+    if (this.selectedDate) {
+      this.filteredCustomers = this.customers.filter(customer =>
+        customer.checkInHistory.some(checkIn =>
+          checkIn.dryFruits.some(dryFruit =>
+            new Date(dryFruit.dateCheckIN).toISOString().split('T')[0] === this.selectedDate
           )
         )
       );
+    } else {
+      this.filteredCustomers = this.customers; // No date selected, show all
     }
-
-    this.totalPages = Math.ceil(filteredItems.length / this.itemsPerPage);
-    this.paginateItems(filteredItems);
-    console.log('Filtered items:', this.paginatedItems); // Debugging line
+    this.currentPage = 1; // Reset to first page after filtering
+    this.updatePaginatedItems(); // Update pagination after filtering
   }
 
-  paginateItems(items: Item[]): void {
-    if (items.length === 0) {
-      this.paginatedItems = [];
-      this.totalPages = 1;
-      return;
+  searchData() {
+    const lowerCaseTerm = this.searchTerm.toLowerCase();
+    this.filteredCustomers = this.customers.filter(customer =>
+      customer.checkInHistory.some(checkIn =>
+        checkIn.dryFruits.some(dryFruit =>
+          dryFruit.cityName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.warehouseName.toLowerCase().includes(lowerCaseTerm) ||
+          dryFruit.rackName.toLowerCase().includes(lowerCaseTerm)
+
+        )
+      )
+    );
+    this.currentPage = 1; // Reset to first page after searching
+    this.updatePaginatedItems(); // Update pagination after searching
+  }
+
+  updatePaginatedItems() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+
+    // Flattening filteredCustomers to get DryFruit objects
+    const allDryFruits: DryFruit[] = this.filteredCustomers.flatMap(customer =>
+      customer.checkInHistory.flatMap(checkIn => checkIn.dryFruits)
+    );
+
+    this.paginatedDryFruits = allDryFruits.slice(startIndex, endIndex); // Slice for pagination
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePaginatedItems();
     }
-
-    const start = (this.currentPage - 1) * this.itemsPerPage;
-    const end = this.currentPage * this.itemsPerPage;
-    this.paginatedItems = items.slice(start, end);
   }
 
-  onSearch(): void {
-    this.applyFilter(); // Apply the filter
-    this.currentPage = 1; // Reset to the first page after searching
-  }
-
-  onPageChange(page: number): void {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
-      this.applyFilter(); // Reapply filter to get paginated items for the current page
+  prevPage() {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedItems();
     }
   }
 
+  get totalPages() {
+    const totalDryFruits = this.filteredCustomers.flatMap(customer =>
+      customer.checkInHistory.flatMap(checkIn => checkIn.dryFruits)
+    ).length;
 
+    return Math.ceil(totalDryFruits / this.itemsPerPage); // Calculate total pages
+  }
 }

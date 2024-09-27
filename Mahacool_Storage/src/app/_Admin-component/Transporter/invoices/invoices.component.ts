@@ -192,6 +192,25 @@ async printInvoice(customer: any) {
                 .heading {
                   margin-left: 40%;
                 }
+                  .customer-details {
+  margin-bottom: 20px;
+}
+
+.customer-details-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.customer-details-row p {
+  margin: 0;
+  flex: 1;
+}
+
+.customer-details-row p:nth-child(3) {
+  flex: 0 0 30%; /* Adjust this percentage as needed */
+}
+
               </style>
             </head>
             <body>
@@ -209,11 +228,17 @@ async printInvoice(customer: any) {
               </div>
 
               <h1 class="heading">Invoice Details</h1>
-              <p><strong>Customer ID:</strong> ${this.selectedCustomer.customerId}</p>
-              <p><strong>Customer Name:</strong> ${this.client.name}</p>
-              <p><strong>Mobile:</strong> ${this.client.mobile}</p>
-              <p><strong>GST Number:</strong> ${this.client.gstNumber}</p>
-              <p><strong>Address:</strong> ${this.client.address}</p>
+            <div class="customer-details">
+  <div class="customer-details-row">
+    <p><strong>Customer ID:</strong> ${this.selectedCustomer.customerId}</p>
+    <p><strong>Customer Name:</strong> ${this.client.name}</p>
+    <p><strong>Mobile:</strong> ${this.client.mobile}</p>
+  </div>
+  <div class="customer-details-row">
+    <p><strong>GST Number:</strong> ${this.client.gstNumber}</p>
+    <p><strong>Address:</strong> ${this.client.address}</p>
+  </div>
+</div>
 
               <table>
                 <thead>

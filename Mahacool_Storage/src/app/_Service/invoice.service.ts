@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class InvoiceService {
 
-  private baseUrl = 'http://localhost:3000/api/MonthlyInvoice'; // Update with your API base URL
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/MonthlyInvoice'; // Update with your API base URL
 
   constructor(private http: HttpClient) {}
 

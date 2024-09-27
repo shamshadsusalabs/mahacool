@@ -18,10 +18,11 @@ export interface DryFruit {
   warehouseName: string;
   weight: number;
   _id: string;
+  dateCheckIN: string;
 }
 
 export interface CheckInHistory {
-  dateCheckIN: string; // Updated field name
+ // Updated field name
   dryFruits: DryFruit[];
   _id: string;
 }
@@ -112,7 +113,7 @@ export class QrCodeComponent implements OnInit {
           this.qrCodes = checkInHistoryArray.flatMap((history: CheckInHistory) =>
             history.dryFruits.map((fruit: DryFruit) => ({
               qrData: JSON.stringify({
-                dateCheckIN: history.dateCheckIN, // Updated
+                dateCheckIN: fruit.dateCheckIN, // Updated
                 dryFruits: history.dryFruits,
                 customerId: customerId
               }),
@@ -123,7 +124,7 @@ export class QrCodeComponent implements OnInit {
               rackName: fruit.rackName,
               weight: fruit.weight,
               recordId:fruit.typeOfSack,
-              dateCheckIN: history.dateCheckIN, // Updated
+              dateCheckIN: fruit.dateCheckIN, // Updated
               _id: fruit._id
             }))
           );
@@ -131,7 +132,7 @@ export class QrCodeComponent implements OnInit {
           // Set selectedData for modal display
           this.selectedData = {
             bussinessName: clientInfo.bussinessName,
-            dateCheckIN: checkInHistoryArray[0]?.dateCheckIN ?? '', // Updated
+            dateCheckIN: checkInHistoryArray[0]?.dryFruits[0]?.dateCheckIN ?? '', // Updated
             weight: checkInHistoryArray[0]?.dryFruits[0]?.weight ?? 0,
             customerId: customerId
           };

@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class PasswordResetService {
 
-  private baseUrl = 'http://localhost:3000/api/client';  // Replace with your backend URL
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/client';  // Replace with your backend URL
 
   constructor(private http: HttpClient) {}
 

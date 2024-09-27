@@ -23,7 +23,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ClientService {
-  private apiUrl = 'http://localhost:3000/api/client'; // Replace with your actual API endpoint
+  private apiUrl = 'https://mahacool-436606.el.r.appspot.com/api/client'; // Replace with your actual API endpoint
 
   constructor(private http: HttpClient) { }
 
@@ -80,7 +80,7 @@ export class ClientService {
   }
 
 
-  private apiUrl1 = 'http://localhost:3000/api/PasswordResetRequest';
+  private apiUrl1 = 'https://mahacool-436606.el.r.appspot.com/api/PasswordResetRequest';
   requestPasswordReset(clientId: string): Observable<void> {
     return this.http.post<void>(`${this.apiUrl1}/password-reset`, { id: clientId });
   }
@@ -100,7 +100,7 @@ export class ClientService {
 
 
 
-  private apiUrl2 = 'http://localhost:3000/api/client';
+  private apiUrl2 = 'https://mahacool-436606.el.r.appspot.com/api/client';
 
   passwordresetRequest(email?: string, mobile?: string, customerID?: string): Observable<any> {
     const url = `${this.apiUrl2}/password-resetRequest-Details`;
@@ -119,7 +119,7 @@ export class ClientService {
     return this.http.post<any>(url, body);
   }
 
-  private apiUrl4 = 'http://localhost:3000/api/client';
+  private apiUrl4 = 'https://mahacool-436606.el.r.appspot.com/api/client';
 
   uploadFile(file: File, clientId: string): Observable<any> {
     const formData: FormData = new FormData();

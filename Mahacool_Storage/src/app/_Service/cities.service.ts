@@ -12,7 +12,7 @@ export interface City {
   providedIn: 'root'
 })
 export class CitiesService {
-  private baseUrl = 'http://localhost:3000/api/city'; // Replace with your API base URL
+  private baseUrl = 'https://mahacool-436606.el.r.appspot.com/api/city'; // Replace with your API base URL
 
   constructor(private http: HttpClient) {}
 
